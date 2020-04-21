@@ -4,15 +4,19 @@
 ### 0. Подготовка к работе
 
 Познакомиться с git:
+
 https://git-scm.com/book/ru/v2/Введение-Основы-Git
 
 Завести аккаунт на github.com. Клонировать репозиторий:
+
 https://github.com/v-sukhov/software-development-course.git
 
 Настроить аутентифкацию с использованием SSH-ключа:
+
 https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh
 
 Папка данной серии проектов:
+
 tcp-client-server
 
 При выполнении заданий в подпапках для каждого проекта необходимо создавать папку со своей фамилией (латиницей) и выполнять проект в ней.
@@ -20,11 +24,13 @@ tcp-client-server
 ### Проект 1: простейшее клиент-серверное приложение
 
 1. Утилита make. Изучить:
+
 https://habr.com/ru/post/211751/
 
 **Важное замечание! При выполнении заданий выполняемые бинарные файлы необходимо именовать с расширением .out, чтобы они подпадали под условия gitignore.**
 
 2. Метриалы по сокетам:
+
 https://rtfm.co.ua/c-sokety-i-primer-modeli-client-server/
 
 https://www.thegeekstuff.com/2011/12/c-socket-programming/
@@ -35,6 +41,7 @@ https://gist.github.com/browny/5211329
 
 
 3. Создаём простейшее клиент-серверное приложение из примера
+
 https://gist.github.com/browny/5211329
 
 4. Задаём серверу порт. По умолчанию должен быть 5000. Если порт не из диапазона 1000 - 64000 - сообщать об ошибке и не запускаться.
@@ -54,8 +61,9 @@ https://www.opennet.ru/man.shtml?topic=select&category=2&russian=0
 соединение и больше не отправлять этому клиенту ничего. Если клиент оборвал соединение - сервер должен продолжать корректно работать.
 
 Нужно корректно игнорировать сигнал SIGPIPE:
-signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 или использовать send с флагом MSG_NOSIGNAL. См.:
+
 https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-them-properly
 		
 
@@ -64,11 +72,14 @@ https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-the
 1. Ознакомиться с ncurses. Провести эксперименты.
 
 Установка ncurses:
-sudo apt-get install libncurses5-dev libncursesw5-dev
+	sudo apt-get install libncurses5-dev libncursesw5-dev
 
 Материалы по ncurses:
+
 https://code-live.ru/post/cpp-ncurses-hello-world
+
 https://code-live.ru/post/terminal-mode-management-ncurses/
+
 https://code-live.ru/post/ncurses-input-output/
 
 *Важно! После printw нужно выполнять refresh()*
