@@ -4,13 +4,13 @@
 ### 0. Подготовка к работе
 
 	Познакомиться с git:
-	https://git-scm.com/book/ru/v2/%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5-%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B-Git
+	<a href="https://git-scm.com/book/ru/v2/%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5-%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B-Git"> https://git-scm.com/book/ru/v2/Введение-Основы-Git </a>
 
 	Завести аккаунт на github.com. Клонировать репозиторий:
 	https://github.com/v-sukhov/software-development-course.git
 	
 	Настроить аутентифкацию с использованием SSH-ключа:
-	https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh
+	<a href="https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh"> https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh </a>
 
 	Папка данной серии проектов:
 	tcp-client-server
