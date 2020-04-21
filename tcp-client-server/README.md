@@ -37,9 +37,6 @@ https://www.thegeekstuff.com/2011/12/c-socket-programming/
 
 http://artlib.osu.ru/Docs/piter/bookchap/978594723991.html
 
-https://gist.github.com/browny/5211329
-
-
 3. Создаём простейшее клиент-серверное приложение из примера
 
 https://gist.github.com/browny/5211329
