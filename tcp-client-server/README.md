@@ -58,7 +58,9 @@ https://www.opennet.ru/man.shtml?topic=select&category=2&russian=0
 соединение и больше не отправлять этому клиенту ничего. Если клиент оборвал соединение - сервер должен продолжать корректно работать.
 
 Нужно корректно игнорировать сигнал SIGPIPE:
+
 	signal(SIGPIPE, SIG_IGN);
+	
 или использовать send с флагом MSG_NOSIGNAL. См.:
 
 https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-them-properly
