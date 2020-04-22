@@ -69,6 +69,7 @@ https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-the
 1. Ознакомиться с ncurses. Провести эксперименты.
 
 Установка ncurses:
+
 	sudo apt-get install libncurses5-dev libncursesw5-dev
 
 Материалы по ncurses:
