@@ -52,9 +52,9 @@ int main(int argc, char *argv[]) {
 	strcpy(recvBuff, "1234");
 	
 	write(sockfd, recvBuff, strlen(recvBuff));
-	printf("%ld", strlen(recvBuff));
+	// printf("%ld", strlen(recvBuff));
 
-	close(sockfd);
-
+	sleep(1);
+	
 	return 0;
 }
