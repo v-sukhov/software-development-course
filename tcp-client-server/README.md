@@ -100,7 +100,7 @@ https://code-live.ru/post/ncurses-input-output/
 	...
 	setlocale(LC_ALL, "");
 
-и при линковке заменить -lnurses на -lncursesw:
+и при линковке заменить -lnсurses на -lncursesw:
 
 	client: client.o
 		gcc client.o -lncursesw -o client.out
