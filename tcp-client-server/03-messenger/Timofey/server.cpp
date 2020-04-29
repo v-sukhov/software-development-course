@@ -16,6 +16,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
 
 
 int main(int argc, char *argv[]) {
@@ -119,8 +120,9 @@ int main(int argc, char *argv[]) {
 				recvBuff[n] = 0;
 
 				if (n > 0)
-					sendMessage(it->second + ": " + std::string(recvBuff));
-				it++;
+					sendMessage(it->second + ": " + std::string(recvBuff)), it++;
+				else
+					it = users.erase(it);
 			} else {
 				it++;
 			}
@@ -134,6 +136,7 @@ int main(int argc, char *argv[]) {
 
 				it++;
 				loginUser(user, std::string(recvBuff));
+				
 			} else {
 				it++;
 			}
