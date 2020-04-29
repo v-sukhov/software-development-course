@@ -12,6 +12,7 @@
 #include <ctime>
 #include <cstdio>
 #include <cstdlib>
+#include <signal.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -66,15 +67,15 @@ int main(int argc, char *argv[]) {
 	auto sendMessage = [&](std::string msg) {
 						   printf("send message: %s\n", msg.c_str());
 						   for (auto it = users.begin(); it != users.end();) {
-							   printf("lkjaskldfjasd\n");
+							   // printf("lkjaskldfjasd\n");
 							   int user = it->first;
 
-							   printf("%ld\n%ld\n", strlen(msg.c_str()), msg.length());
+							   // printf("%ld\n%ld\n", strlen(msg.c_str()), msg.length());
 							   int w = write(user, msg.c_str(), strlen(msg.c_str()));
-							   printf("%d\n", w);
+							   // printf("%d\n", w);
 							   
 							   if (w > 0) {
-								   printf("aksdfa\n");
+								   // printf("aksdfa\n");
 								   it++;
 							   } else {
 								   printf("disconnect user\n");
@@ -88,6 +89,7 @@ int main(int argc, char *argv[]) {
 						 noLoginUsers.erase(user);
 						 sendMessage("login " + name);
 					 };
+	signal(SIGPIPE, SIG_IGN);
 	
 	while (true) {
 		FD_ZERO(&rfds);
@@ -96,27 +98,29 @@ int main(int argc, char *argv[]) {
 		int maxFD = listenfd;
 
 		for (int i: noLoginUsers)
-			FD_SET(i, &rfds), maxFD = std::max(maxFD, i);
+			/*printf("%d\n", i), */FD_SET(i, &rfds), maxFD = std::max(maxFD, i);
 
 		for (std::pair<int, std::string> i: users)
-			FD_SET(i.first, &rfds), maxFD = std::max(maxFD, i.first);
+			/* printf("%d\n", i.first), */ FD_SET(i.first, &rfds), maxFD = std::max(maxFD, i.first);
 
 
 		printf("murmay\n");
-		
 		int cntRequest = select(maxFD + 1, &rfds, NULL, NULL, NULL);
+		printf("unlock\n%ld\n%ld\n%d\n", noLoginUsers.size(), users.size(), cntRequest);
 
 		if (FD_ISSET(listenfd, &rfds))
 			connectUser(accept(listenfd, (struct sockaddr*)NULL, NULL));
 
-
 		for (auto it = users.begin(); it != users.end();) {
 			if (FD_ISSET(it->first, &rfds)) {
+				printf("hello\n");
 				int user = it->first;
 				int n = read(user, recvBuff, sizeof(recvBuff) - 1);
 				recvBuff[n] = 0;
-				
-				sendMessage(it->second + ": " + std::string(recvBuff));
+
+				if (n > 0)
+					sendMessage(it->second + ": " + std::string(recvBuff));
+				it++;
 			} else {
 				it++;
 			}
@@ -134,7 +138,7 @@ int main(int argc, char *argv[]) {
 				it++;
 			}
 		}
-		printf("test\n");
+		// printf("test\n");
 	}
 	
 	return 0;
