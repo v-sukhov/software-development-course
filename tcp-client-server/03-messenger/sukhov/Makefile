@@ -10,5 +10,5 @@ server: server.o
 	g++ server.o -o server.out
 	
 client: client.o
-	gcc client.o -lncurses -o client.out
+	gcc client.o -lncursesw -o client.out
 
