@@ -9,6 +9,7 @@
 //#include <errno.h>
 #include <arpa/inet.h>
 #include <ncurses.h>
+#include <locale.h>
 
 
 void delete_current_string(int len)
@@ -27,6 +28,8 @@ int main(int argc, char *argv[])
     char message[1025];
     int messageLen = 0;
 	struct sockaddr_in serv_addr;
+    
+    setlocale(LC_ALL, "");
 
 	if(argc > 3)
 	{

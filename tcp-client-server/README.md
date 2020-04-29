@@ -57,8 +57,10 @@ https://www.opennet.ru/man.shtml?topic=select&category=2&russian=0
 при подключении отправлять клиенту не сразу). Допускается подключение новых клиентов. При отключении клиента сервер должен корректно закрывать
 соединение и больше не отправлять этому клиенту ничего. Если клиент оборвал соединение - сервер должен продолжать корректно работать.
 
-Нужно корректно игнорировать сигнал SIGPIPE:
+Нужно корректно игнорировать сигнал SIGPIPE (сигнал, передаваемый при попытке чтения из закрытого сокета и по-умолчанию приводящий к аварийному завершению работы программы):
+
 	signal(SIGPIPE, SIG_IGN);
+	
 или использовать send с флагом MSG_NOSIGNAL. См.:
 
 https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-them-properly
@@ -69,6 +71,7 @@ https://stackoverflow.com/questions/108183/how-to-prevent-sigpipes-or-handle-the
 1. Ознакомиться с ncurses. Провести эксперименты.
 
 Установка ncurses:
+
 	sudo apt-get install libncurses5-dev libncursesw5-dev
 
 Материалы по ncurses:
@@ -90,6 +93,18 @@ https://code-live.ru/post/ncurses-input-output/
 
 3. Сделать отправку по клавише Enter
 4. Включить кириллицу
+
+Для этого необходимо в коде добавить:
+
+	#include <locale.h>
+	...
+	setlocale(LC_ALL, "");
+
+и при линковке заменить -lnсurses на -lncursesw:
+
+	client: client.o
+		gcc client.o -lncursesw -o client.out
+
 5. Для ранее зарегистрировавшихся, но переподключившихся пользователей отправлять историю - что они пропустили.
 	
 
