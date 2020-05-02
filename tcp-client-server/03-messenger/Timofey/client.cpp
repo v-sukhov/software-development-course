@@ -8,10 +8,12 @@
 #include <unistd.h>
 #include <cerrno>
 #include <arpa/inet.h>
+#include <ncurses.h>
+
+WINDOW *chat, *input;
 
 int main(int argc, char *argv[]) {
-	int sockfd = 0, n = 0;
-	char recvBuff[1024];
+	int sockfd = 0;
 	struct sockaddr_in serv_addr;
 
 	int servPort = 5000;
@@ -21,14 +23,17 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	if (strcmp(argv[1], "localhost") == 0)
-		argv[1] = "127.0.0.1";
-
-	if (argc == 3)
+	char *servIP;
+	if (strcmp(argv[1], "localhost") == 0) {
+		servIP = new char[sizeof("127.0.0.1")], strcpy(servIP, "127.0.0.1");
+	} else {
+		servIP = new char[sizeof(argv[1])], strcpy(servIP, argv[1]);
+	}
+	
+	if (argc == 3) {
 		servPort = atoi(argv[2]);
-
-	memset(recvBuff, '0',sizeof(recvBuff));
-
+	}
+	
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		printf("\n Error : Could not create socket \n");
 		return 1;
@@ -39,7 +44,7 @@ int main(int argc, char *argv[]) {
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(servPort);
 
-	if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) <= 0) {
+	if(inet_pton(AF_INET, servIP, &serv_addr.sin_addr) <= 0) {
 		printf("\n inet_pton error occured\n");
 		return 1;
 	}
@@ -49,12 +54,33 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	strcpy(recvBuff, "1234");
-	
-	write(sockfd, recvBuff, strlen(recvBuff));
-	// printf("%ld", strlen(recvBuff));
+	printf("Write your name: ");
+	fflush(stdout);
 
-	sleep(1);
+	char name[15];
+	scanf("%s", name);
+
+	write(sockfd, name, sizeof(name));
+
+	initscr();
+    refresh();
+	
+	chat = newwin(LINES - 1, COLS, 0, 0);
+	box(chat, 0, 0);
+	wmove(chat, 0, 1);
+	wprintw(chat, "chat");
+	
+	input = newwin(1, COLS, LINES - 1, 0);
+	wprintw(input, "%s > ", name);
+
+	wrefresh(chat);
+	wrefresh(input);
+	
+    getch();
+
+    delwin(chat);
+	delwin(input);
+    endwin();
 	
 	return 0;
 }
