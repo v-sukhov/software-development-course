@@ -20,12 +20,10 @@
 
 
 int main(int argc, char *argv[]) {
-
-	int listenfd = 0, connfd = 0;
+	int listenfd = 0;
 	char recvBuff[1024];
 	struct sockaddr_in serv_addr;
 	int servPort = 5000;
-	time_t ticks;
 
 	char sendBuff[1025];
 
@@ -55,8 +53,6 @@ int main(int argc, char *argv[]) {
 	listen(listenfd, 10);
 
 	fd_set rfds;
-	struct timeval tv;
-	int retval;
 
 	std::unordered_map<int, std::string> users;
 	std::unordered_set<int> noLoginUsers;
@@ -108,7 +104,7 @@ int main(int argc, char *argv[]) {
 
 
 		// printf("murmay\n");
-		int cntRequest = select(maxFD + 1, &rfds, NULL, NULL, NULL);
+		select(maxFD + 1, &rfds, NULL, NULL, NULL);
 		// printf("unlock\n%ld\n%ld\n%d\n", noLoginUsers.size(), users.size(), cntRequest);
 
 		if (FD_ISSET(listenfd, &rfds))
