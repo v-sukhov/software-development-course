@@ -10,14 +10,23 @@
 #include <arpa/inet.h>
 #include <ncurses.h>
 
-WINDOW *chat, *input;
+WINDOW *chatBorder, *chat, *input;
 
 void printMessage(char *msg) {
 	int x, y;
 	getyx(chat, y, x);
+	
 	wprintw(chat, "%s", msg);
-	wmove(chat, y + 1, x);
+	getyx(chat, y, x);
+
+	wmove(chat, y + 1, 1);
+	
 	wrefresh(chat);
+	if (y == LINES - 4) {
+		wmove(chat, 0, 0);
+		wdeleteln(chat);
+		wmove(chat, y, 1);
+	} 
 }
 
 int main(int argc, char *argv[]) {
@@ -72,20 +81,23 @@ int main(int argc, char *argv[]) {
 
 	initscr();
     refresh();
-	
-	chat = newwin(LINES - 1, COLS, 0, 0);
-	box(chat, 0, 0);
+
+	chatBorder = newwin(LINES - 1, COLS, 0, 0);
+	chat = newwin(LINES - 3, COLS - 2, 1, 1);
+	box(chatBorder, 0, 0);
+	wmove(chatBorder, 0, 1);
+	wprintw(chatBorder, "chat");
 	wmove(chat, 0, 1);
-	wprintw(chat, "chat");
-	wmove(chat, 1, 2);
 	
 	input = newwin(1, COLS, LINES - 1, 0);
 	wprintw(input, "%s > ", name);
 
+
 	wrefresh(chat);
 	wrefresh(input);
-
-	printMessage("help");
+	wrefresh(chatBorder);
+	
+	// printMessage("help");
 
 	fd_set rfds;
 	FD_ZERO(&rfds);
@@ -110,6 +122,7 @@ int main(int argc, char *argv[]) {
 
 		if (FD_ISSET(0, &rfds)) {
 			char x = getch();
+			// printf("%d\n", (int)x);
 			if (x == 10) { // RETURN
 				int x, y;
 				getyx(input, y, x);
@@ -122,6 +135,15 @@ int main(int argc, char *argv[]) {
 				write(sockfd, msg, strlen(msg));
 				
 				lenMsg = 0;
+			} else if (x == 127) { // backspace
+				int x, y;
+				getyx(input, y, x);
+				if (x > strlen(name) + 3) {
+					wmove(input, y, x - 1);
+					wprintw(input, " ");
+					wmove(input, y, x - 1);
+					lenMsg--;
+				}
 			} else {
 				wprintw(input, "%c", x);
 				msg[lenMsg++] = x;
