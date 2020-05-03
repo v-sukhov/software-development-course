@@ -99,6 +99,9 @@ int main(int argc, char *argv[]) {
 	wmove(input, y, x);
 	wrefresh(input);
 
+	int lenMsg = 0;
+	char msg[1025];
+
 	while (true) {
 		FD_SET(0, &rfds);	
 		FD_SET(sockfd, &rfds);
@@ -106,7 +109,23 @@ int main(int argc, char *argv[]) {
 		select(sockfd + 1, &rfds, NULL, NULL, NULL);
 
 		if (FD_ISSET(0, &rfds)) {
-			break;
+			char x = getch();
+			if (x == 10) { // RETURN
+				int x, y;
+				getyx(input, y, x);
+				wmove(input, y, strlen(name) + 3);
+				wclrtoeol(input);
+				wrefresh(input);
+
+				msg[lenMsg] = 0;
+
+				write(sockfd, msg, strlen(msg));
+				
+				lenMsg = 0;
+			} else {
+				wprintw(input, "%c", x);
+				msg[lenMsg++] = x;
+			}
 		}
 		if (FD_ISSET(sockfd, &rfds)) {
 			int n = read(sockfd, recBuff, 1024);
