@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
 	auto connectUser = [&](int user) {
 						   noLoginUsers.insert(user);
-						   write(user, "reg: ", strlen("reg: "));
+						   // write(user, "reg: ", strlen("reg: "));
 					   };
 
 	auto sendMessage = [&](std::string msg) {
