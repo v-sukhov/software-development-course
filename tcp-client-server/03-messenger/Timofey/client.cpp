@@ -9,6 +9,7 @@
 #include <cerrno>
 #include <arpa/inet.h>
 #include <ncurses.h>
+#include <locale.h>
 
 WINDOW *chatBorder, *chat, *input;
 
@@ -30,6 +31,8 @@ void printMessage(char *msg) {
 }
 
 int main(int argc, char *argv[]) {
+	setlocale(LC_ALL, "");
+	
 	int sockfd = 0;
 	struct sockaddr_in serv_addr;
 
@@ -80,6 +83,7 @@ int main(int argc, char *argv[]) {
 	write(sockfd, name, sizeof(name));
 
 	initscr();
+	
     refresh();
 
 	chatBorder = newwin(LINES - 1, COLS, 0, 0);
@@ -154,9 +158,9 @@ int main(int argc, char *argv[]) {
 			recBuff[n] = 0;
 			printMessage(recBuff);
 		}
-		int x, y;
-		getyx(input, y, x);
-		wmove(input, y, x);
+		// int x, y;
+		// getyx(input, y, x);
+		// wmove(input, y, x);
 		wrefresh(input);
 	}
     delwin(chat);
