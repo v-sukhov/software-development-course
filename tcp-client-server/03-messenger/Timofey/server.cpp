@@ -20,12 +20,10 @@
 
 
 int main(int argc, char *argv[]) {
-
-	int listenfd = 0, connfd = 0;
+	int listenfd = 0;
 	char recvBuff[1024];
 	struct sockaddr_in serv_addr;
 	int servPort = 5000;
-	time_t ticks;
 
 	char sendBuff[1025];
 
@@ -55,15 +53,13 @@ int main(int argc, char *argv[]) {
 	listen(listenfd, 10);
 
 	fd_set rfds;
-	struct timeval tv;
-	int retval;
 
 	std::unordered_map<int, std::string> users;
 	std::unordered_set<int> noLoginUsers;
 
 	auto connectUser = [&](int user) {
 						   noLoginUsers.insert(user);
-						   write(user, "reg: ", strlen("reg: "));
+						   // write(user, "reg: ", strlen("reg: "));
 					   };
 
 	auto sendMessage = [&](std::string msg) {
@@ -80,18 +76,19 @@ int main(int argc, char *argv[]) {
 								   // printf("aksdfa\n");
 								   it++;
 							   } else {
-								   printf("disconnect user\n");
+								   printf("disconnect user %s\n", it->second.c_str());
 								   it = users.erase(it);
 							   }
 						   }
 					   };
 
 	auto loginUser = [&](int user, std::string name) {
+						 printf("login user %s\n", name.c_str());
 						 users.insert({user, name});
 						 noLoginUsers.erase(user);
 						 sendMessage("login " + name);
 					 };
-	signal(SIGPIPE, SIG_IGN);
+	// signal(SIGPIPE, SIG_IGN);
 	
 	while (true) {
 		FD_ZERO(&rfds);
@@ -106,16 +103,16 @@ int main(int argc, char *argv[]) {
 			/* printf("%d\n", i.first), */ FD_SET(i.first, &rfds), maxFD = std::max(maxFD, i.first);
 
 
-		printf("murmay\n");
-		int cntRequest = select(maxFD + 1, &rfds, NULL, NULL, NULL);
-		printf("unlock\n%ld\n%ld\n%d\n", noLoginUsers.size(), users.size(), cntRequest);
+		// printf("murmay\n");
+		select(maxFD + 1, &rfds, NULL, NULL, NULL);
+		// printf("unlock\n%ld\n%ld\n%d\n", noLoginUsers.size(), users.size(), cntRequest);
 
 		if (FD_ISSET(listenfd, &rfds))
 			connectUser(accept(listenfd, (struct sockaddr*)NULL, NULL));
 
 		for (auto it = users.begin(); it != users.end();) {
 			if (FD_ISSET(it->first, &rfds)) {
-				printf("hello\n");
+				// printf("hello\n");
 				int user = it->first;
 				int n = read(user, recvBuff, sizeof(recvBuff) - 1);
 				recvBuff[n] = 0;
@@ -123,7 +120,7 @@ int main(int argc, char *argv[]) {
 				if (n > 0)
 					sendMessage(it->second + ": " + std::string(recvBuff)), it++;
 				else
-					it = users.erase(it);
+					printf("disconnect user %s\n", it->second.c_str()), it = users.erase(it);
 			} else {
 				it++;
 			}
