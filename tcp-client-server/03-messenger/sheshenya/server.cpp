@@ -51,7 +51,6 @@ signed main(int argc, char *argv[]) {
             FD_SET(x, &rfds);
         }
 
-        //cout << "r" << endl;
         if (select(max_fd + 1, &rfds, NULL, NULL, NULL)) {
             if (FD_ISSET(listenfd, &rfds)) {
                 sockaddr_in client_addr;
@@ -60,7 +59,6 @@ signed main(int argc, char *argv[]) {
                 
                 int connfd = accept(listenfd, (struct sockaddr *)&client_addr, &len);
                 clients.insert({ connfd, "" });
-                cout << "aaa" << endl;
 
                 write(connfd, greeting, strlen(greeting));
             }
@@ -88,7 +86,6 @@ signed main(int argc, char *argv[]) {
                     for (auto it = clients.begin(); it != clients.end(); ) {
                         if (write(it->first, message.c_str(), message.size())) {
                             it++;
-                            cout << "1" << endl;
                         }
                         else {
                             close(it->first);

@@ -69,6 +69,7 @@ int main(int argc, char *argv[]) {
 
     printw("%s", "> ");
 
+    halfdelay(1);
     
     while (true) {
         char ch = getch();
@@ -81,7 +82,7 @@ int main(int argc, char *argv[]) {
                     printw("\b \b");
                 }
                 cur.clear();
-                sleep(1);
+                usleep(static_cast <unsigned int> (100));
             }
         }
         else if (id == 127) { // backspace
@@ -90,7 +91,7 @@ int main(int argc, char *argv[]) {
                 printw("\b \b");
             }
         }
-        else {
+        else if (id != -1){ // other symbol
             cur += ch;
             printw("%c", ch);
         }
