@@ -1,4 +1,3 @@
-
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -12,7 +11,54 @@
 #include <iostream>
 
 using namespace std;
+typedef long long ll;
 
+const ll primes[] = 
+{ 1000000007, 1000000403, 1000000787, 1000001447, 1000001819,
+1000002359, 1000002803, 1000003919, 1000004207, 1000004519 };
+
+const ll roots[] = 
+{ 5, 2, 2, 5, 2, 11, 2, 13, 5, 13 };
+
+const int table_size = sizeof(primes) / 8;
+
+ll modpow(ll b, ll e, ll mod) {
+    if (e == 0) {
+        return 1;
+    }
+    if (e % 2) {
+        return (e * modpow(b, e - 1, mod)) % mod;
+    }
+    else {
+        return modpow((b * b) % mod, e / 2, mod);
+    }
+}
+
+#include <chrono>
+#include <random>
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+ll rng_on(ll l, ll r) {
+    return rng() % (r - l + 1) + l;
+}
+
+void encrypt(string& s, ll key) {
+    string key_s = to_string(key);
+
+    for (size_t i = 0; i < s.size(); i++) {
+        s[i] ^= key_s[i % key_s.size()];
+        s[i]++;
+    }
+}
+
+void decrypt(string& s, ll key) {
+    string key_s = to_string(key);
+
+    for (size_t i = 0; i < s.size(); i++) {
+        s[i]--;
+        s[i] ^= key_s[i % key_s.size()];
+    }
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -29,11 +75,34 @@ int main(int argc, char *argv[]) {
 
     
     connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
-
     char resp[1024];
     memset(resp, 0, sizeof resp);
-    int n = read(sockfd, resp, sizeof(resp) - 1);
 
+    // setting up encrypred connetion
+
+    int n = read(sockfd, resp, sizeof(resp) - 1);
+    resp[n] = 0;
+
+    int id = atoi(resp);
+    ll prime = primes[id];   // modulo
+    ll root = roots[id];     // base
+
+    ll alpha = rng_on(1, 1e18);
+    ll key = modpow(root, alpha, prime);
+
+    write(sockfd, to_string(key).c_str(), to_string(key).size());
+    n = read(sockfd, resp, sizeof(resp) - 1);
+    resp[n] = 0;
+
+    key = atoi(resp);
+    cout << "key: " << key << endl;
+
+    // done
+    
+    n = read(sockfd, resp, sizeof(resp) - 1);
+    resp[n] = 0;
+    cout << "sdfawetfasd" << endl;
+    
     initscr();
     noecho();
 
@@ -46,6 +115,7 @@ int main(int argc, char *argv[]) {
         int id = static_cast <int> (ch);
 
         if (id == 10) { // enter
+            encrypt(cur, key);
             write(sockfd, cur.c_str(), cur.size());
             cur.clear();
             printw("\n");
@@ -78,6 +148,7 @@ int main(int argc, char *argv[]) {
 
         if (id == 10) { // enter
             if (!cur.empty()) {
+                encrypt(cur, key);
                 write(sockfd, cur.c_str(), cur.size());
                 for (size_t i = 0; i < cur.size() + 2; i++) {
                     printw("\b \b");
@@ -106,10 +177,11 @@ int main(int argc, char *argv[]) {
                     printw("\b \b");
                 }
 
-		memset(resp, 0, sizeof resp);
                 n = read(sockfd, resp, sizeof(resp) - 1);
                 resp[n] = 0;
-                printw("%s", resp);
+                string s = resp;
+                decrypt(s, key);
+                printw("%s", s.c_str());
                 printw("\n> ");
                 printw("%s", cur.c_str());
             }
