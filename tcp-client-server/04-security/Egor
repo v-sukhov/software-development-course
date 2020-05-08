@@ -1,0 +1,464 @@
+#include<cstring>
+#include<iostream>
+
+/* elong --- signed integer long variable.
+Developed by Egor
+��������� ��������: <, >, ==, <=, >=, !=, = string, = elong, +, -, *, /, %, get()
+                    ++x, --x, +=, -=, *=, /=, %=, a = b = c,
+                    epow(a, int n, mod), epow(a, int n), epow(a, elong n, mod), epow(a, elong n)
+*/
+struct elong {
+    
+private:
+    std::string A; // val
+    bool negative;
+
+    void flip(std::string& A) { // �������������� �����
+        for (int i = 0; i < A.size() / 2; i++) {
+            std::swap(A[i], A[A.size() - i - 1]);
+        }
+    }
+
+    bool less(const std::string& a, const std::string& b) const { // <
+        if (a.size() == b.size()) {
+            for (int i = 0; i < a.size(); i++) {
+                if (a[i] != b[i]) {
+                    return a[i] < b[i];
+                }
+            }
+            return false;
+        }
+        return a.size() < b.size();
+    }
+    bool more(const std::string& a, const std::string& b) const { // >
+        if (a.size() == b.size()) {
+            for (int i = 0; i < a.size(); i++) {
+                if (a[i] != b[i]) {
+                    return a[i] > b[i];
+                }
+            }
+            return false;
+        }
+        return a.size() > b.size();
+    }
+    bool equally(const std::string& a, const std::string& b) const { // ==
+        if (a.size() == b.size()) {
+            for (int i = 0; i < a.size(); i++) {
+                if (a[i] != b[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    void clear(std::string& a) { // cleans leading zeros
+        int i = 0;
+        for (; i < a.size() && a[i] == '0'; i++) {
+        }
+        a = a.substr(i);
+        if (a.size() == 0) {
+            a += '0';
+        }
+    }
+
+    // +, -, * , / , %
+    std::string add(const std::string& a, const std::string& b) {
+        int i = a.size() - 1, j = b.size() - 1;
+        std::string ret;
+        short c = 0;
+        while (i >= 0 && j >= 0) {
+            short val = a[i] + b[j] - 2 * '0' + c;
+            ret += val % 10 + '0';
+            c = val / 10;
+            i--, j--;
+        }
+        while (i >= 0) {
+            short val = a[i] - '0' + c;
+            ret += val % 10 + '0';
+            c = val / 10;
+            i--;
+        }
+        while (j >= 0) {
+            short val = b[j] - '0' + c;
+            ret += val % 10 + '0';
+            c = val / 10;
+            j--;
+        }
+        if (c > 0) {
+            ret += c + '0';
+        }
+        flip(ret);
+        return ret;
+    }
+    std::string reduce(std::string minuend, const std::string& subtrahend) { //��������� �������� �� �������� �������
+        int i = minuend.size() - 1, j = subtrahend.size() - 1;
+        while (i >= 0 && j >= 0) {
+            minuend[i] -= subtrahend[j];
+            if (minuend[i] < 0) {
+                int index = i - 1;
+                bool find = false;
+                while (index >= 0) {
+                    if (minuend[index] > '0') {
+                        find = true;
+                        break;
+                    }
+                    index--;
+                }
+                if (find) {
+                    minuend[index]--;
+                    index++;
+                    while (index < i) {
+                        minuend[index] += 9;
+                        index++;
+                    }
+                    minuend[index] += 10;
+                }
+            }
+            minuend[i] += '0';
+            i--, j--;
+        }
+        clear(minuend);
+        return minuend;
+    }
+    std::string multip(const std::string& a, const std::string& b) {
+        std::string ret = std::string(a.size() * b.size() + 1, '0'); // ��������� 0
+        int i = a.size() - 1;
+        short k = 0;
+        while (i >= 0) {
+            int j = b.size() - 1;
+            int index;
+            while (j >= 0) {
+                index = (a.size() - 1 - i) + (b.size() - 1 - j);
+                short val = (a[i] - '0') * (b[j] - '0') + k + ret[index] - '0';
+                ret[index] = val % 10 + '0';
+                k = val / 10;
+                j--;
+            }
+            if (k > 0) {
+                ret[index + 1] += k;
+                k = 0;
+            }
+            i--;
+        }
+        flip(ret);
+        clear(ret);
+        return ret;
+    }
+    std::string division(const std::string &dividend, const std::string &divider) {
+        if (divider == "0") {
+            return "0";
+        }
+        std::string ret, value;
+        int i = 0;
+        while (i < dividend.size() && less(value, divider)) {
+            value += dividend[i];
+            i++;
+        }
+        value.pop_back();
+        i--;
+        for (; i < dividend.size(); i++) {
+            value += dividend[i];
+            clear(value);
+            short num = 0;
+            while (!less(value, divider)) {// ���� ����������� ������ �����������
+                value = reduce(value, divider);
+                num++;
+            }
+            ret += num + '0';
+        }
+        return ret;
+    }
+    std::string remainder_of_the_division(const std::string& a, const std::string& b) { 
+        return reduce(a, multip(b, division(a, b)));// a - (a / b) * b
+    }
+    // end num operators
+
+public:
+    // bool operators
+    bool operator == (const elong& other) const {// str == str && sign == sign
+        return equally(A, other.A) && negative == other.negative;
+    }
+    bool operator == (std::string other) const {
+        elong k; k = other;
+        return *this == k;
+    }
+
+    bool operator < (const elong& other) const {
+        if (negative == other.negative) {
+            if (negative) {
+                return more(A, other.A);
+            }
+            else {
+                return less(A, other.A);
+            }
+        }
+        return negative;
+    }
+    bool operator < (std::string other) const {
+        elong k; k = other;
+        return *this < k;
+    }
+
+    bool operator > (const elong& other) const {
+        if (negative == other.negative) {
+            if (negative) {
+                return less(A, other.A);
+            }
+            else {
+                return more(A, other.A);
+            }
+        }
+        return !negative;
+    }
+    bool operator > (std::string other) const {
+        elong k; k = other;
+        return *this > k;
+    }
+
+    bool operator <= (const elong& other) const { // < + ==
+        return (*this) < other || (*this) == other;
+    }
+    bool operator <= (std::string other) const {
+        elong k; k = other;
+        return *this <= k;
+    }
+
+    bool operator >= (const elong& other) const {
+        return (*this) > other || (*this) == other;
+    }
+    bool operator >= (std::string other) const {
+        elong k; k = other;
+        return *this >= k;
+    }
+
+    bool operator != (const elong& other) const { // ! ==
+        return !((*this) == other);
+    }
+    bool operator != (std::string other) const {
+        elong k; k = other;
+        return *this != k;
+    }
+    // end bool operators
+
+    std::string get() {
+        if (negative) {
+            return '-' + A;
+        }
+        return A;
+    } // output
+
+    elong& operator = (std::string a) {
+        A = a;
+        negative = false;
+        if (a.size() > 0 && a[0] == '-') {
+            negative = true;
+            A = A.substr(1); // ������ ���� -
+        }
+        return *this;
+    }
+    elong& operator = (const elong& a) {
+        A = a.A;
+        negative = a.negative;
+        return *this;
+    }
+    elong& operator = (const char* a) {
+        elong k; k = (std::string)a;
+        return *this = k;
+    }
+
+    // +, -, *, /, %
+    elong operator + (const elong& b) {
+        elong ret;
+        if (negative == b.negative) {
+            ret = add(A, b.A);
+            ret.negative = negative;
+        }
+        else {
+            if (more(A, b.A)) {
+                ret = reduce(A, b.A);
+                ret.negative = negative;
+            }
+            else {
+                ret = reduce(b.A, A);
+                ret.negative = b.negative;
+            }
+        }
+        return ret;
+    }
+    elong operator + (std::string b) {
+        elong k; k = b;
+        return *this + k;
+    }
+    elong operator + (const char* b) {
+        elong k; k = (std::string)b;
+        return *this + k;
+    }
+    elong operator - (const elong& b) {
+        elong G = b;
+        G.negative = !G.negative;
+        return *this + G;
+    }
+    elong operator - (std::string b) {
+        elong k; k = b;
+        return *this - k;
+    }
+    elong operator - (const char* b) {
+        elong k; k = (std::string)b;
+        return *this - k;
+    }
+    elong operator * (const elong& b) {
+        elong ret;
+        ret = multip(A, b.A);
+        ret.negative = false;
+        if (negative != b.negative) { // - * +
+            ret.negative = true;
+        }
+        return ret;
+    }
+    elong operator * (std::string& b) {
+        elong k; k = b;
+        return *this * k;
+    }
+    elong operator * (const char* b) {
+        elong k; k = (std::string)b;
+        return *this * k;
+    }
+    elong operator / (const elong& b) {
+        elong ret;
+        ret = division(A, b.A);
+        ret.negative = false;
+        if (negative != b.negative) {
+            ret.negative = true;
+        }
+        return ret;
+    }
+    elong operator / (std::string& b) {
+        elong k; k = b;
+        return *this / k;
+    }
+    elong operator / (const char* b) {
+        elong k; k = (std::string)b;
+        return *this / k;
+    }
+    elong operator % (const elong& b) { // remainder_of_the_division
+        elong ret;
+        ret = remainder_of_the_division(A, b.A);
+        ret.negative = false;
+        if (negative != b.negative) {
+            ret.negative = true;
+        }
+        return ret;
+    }
+    elong operator % (std::string b) {
+        elong k; k = b;
+        return *this % k;
+    }
+    elong operator % (const char* b) {
+        elong k; k = (std::string)b;
+        return *this % k;
+    }
+    // end operators
+
+    elong& operator ++ () { // ++x
+        elong k; k = "1";
+        (*this) = (*this) + k;
+        return *this;
+    }
+    elong& operator -- () {// --x
+        elong k; k = "-1";
+        (*this) = (*this) + k;
+        return *this;
+    }
+
+    elong& operator += (const elong& a) { // a += x
+        *this = *this + a;
+        return *this;
+    }
+    elong& operator -= (const elong& a) { // a -= x
+        *this = *this - a;
+        return *this;
+    }
+    elong& operator *= (const elong& a) { // a -= x
+        *this = *this * a;
+        return *this;
+    }
+    elong& operator /= (const elong& a) { // a -= x
+        *this = *this / a;
+        return *this;
+    }
+    elong& operator %= (const elong& a) { // a -= x
+        *this = *this % a;
+        return *this;
+    }
+
+    elong& clamp(const elong& min, const elong& max) { //return value in [min, max]
+        if (*this > max) {
+            *this = max;
+            return *this;
+        }
+        else if (*this < min) {
+            *this = min;
+            return *this;
+        }
+        return *this;
+    }
+};
+
+elong epow(const elong& a, int n, const elong& mod) {
+    if (n == 0) {
+        elong ret; ret = "1";
+        return ret;
+    }
+    elong z = epow(a, n / 2, mod);
+    z = (z * z) % mod;
+    if (n % 2 == 0) {
+        return z;
+    }
+    else {
+        return (z * a) % mod;
+    }
+}
+elong epow(const elong& a, int n) {
+    if (n == 0) {
+        elong ret; ret = "1";
+        return ret;
+    }
+    elong z = epow(a, n / 2);
+    z *= z;
+    if (n % 2 == 0) {
+        return z;
+    }
+    else {
+        return z * a;
+    }
+}
+elong epow(const elong& a, elong n, const elong& mod) {
+    if (n == "0") {
+        elong ret; ret = "1";
+        return ret;
+    }
+    elong z = epow(a, n / "2", mod);
+    z = (z * z) % mod;
+    if (n % "2" == "0") {
+        return z;
+    }
+    else {
+        return (z * a) % mod;
+    }
+}
+elong epow(const elong& a, elong n) {
+    if (n == "0") {
+        elong ret; ret = "1";
+        return ret;
+    }
+    elong z = epow(a, n / "2");
+    z *= z;
+    if (n % "2" == "0") {
+        return z;
+    }
+    else {
+        return z * a;
+    }
+}
