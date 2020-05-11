@@ -1,3 +1,3 @@
 #!/bin/bash
 
-javac -d bin src/HelloWorld.java
+javac -d bin src/HelloWorldThread.java
