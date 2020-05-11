@@ -1,0 +1,3 @@
+#!/bin/bash
+
+java -classpath ./bin ru.krdscp.javaconcurrency.javahelloworld.HelloWorldThread
