@@ -14,6 +14,8 @@ https://www.tutorialspoint.com/java/index.htm
 
 https://habr.com/ru/post/125210/
 
+https://docs.oracle.com/javase/tutorial/
+
 
 2. Многопоточность в Java.
 
