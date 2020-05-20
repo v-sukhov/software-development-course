@@ -4,22 +4,22 @@ import java.time.Instant;
 
 class AffableThread extends Thread {
 
-    private static boolean is_prime(int number) { // <= O(sqrt(number))
+    public static boolean is_prime(int number) { // <= O(sqrt(number))
         int i;
         for (i = 2; i * i <= number && number % i != 0; i++) {
         }
         return number % i != 0;
     }
 
-    synchronized public static int get_segment(int index){
-        for(; index < Program.segments_size && Program.is_used[index]; index++){
+    synchronized public static int get_segment(){ // Здесь все потоки в сумме сделают segments_size действий
+        for(; Program.segment_index < Program.segments_size && Program.is_used[Program.segment_index]; Program.segment_index++){
         }
-        if(index == Program.segments_size){
+        if(Program.segment_index >= Program.segments_size){
             return -1; // не был найден отрезок
         }
         else{
-            Program.is_used[index] = true;
-            return index;
+            Program.is_used[Program.segment_index] = true;
+            return Program.segment_index;
         }
     }
 
@@ -30,10 +30,10 @@ class AffableThread extends Thread {
         // нужно выдать потоку отрезок
             // посчитать для этого отрезка ответ
 
-        int segment_id = get_segment(0);
+        int segment_id = get_segment();
         while(segment_id != -1){
             solve(segment_id);
-            segment_id = get_segment(segment_id + 1);
+            segment_id = get_segment();
         }
     }
 
@@ -55,16 +55,16 @@ public class Program // главный класс
 
     public static int left, right, number_of_threads, segment_len;
 
-    public static int segments_size;
+    public static int segments_size, segment_index;
 
     public static void main(String[] args) throws InterruptedException {
         left = 100;
         right = 1000000;
-        number_of_threads = 1;
+        number_of_threads = 4;
         segment_len = 30000; // const
         // можно изменять их значения
 
-        // segment_len = 3 * 1e4
+        // segment_len = 3 * 1e4, simple is_prime
         // 1 : 260-300
         // 2 : 150-170
         // 3 : 130-160
@@ -80,14 +80,15 @@ public class Program // главный класс
         { // Init Segments
 
             { // update segments_size
-                int len = right - left + 1, plus = 0;
+                int len = (int)(right - left + 1), plus = 0;
                 if (len % segment_len > 0) { // остался маленький отрезок
                     plus = 1;
                 }
                 segments_size = len / segment_len + plus;
             }
 
-            right++;
+            //[l, r)
+            right++;// [left, right)
 
             COUNTS = new int[segments_size];
             Begin = new int[segments_size];
@@ -97,14 +98,14 @@ public class Program // главный класс
                 Begin[i] = left + i * segment_len;
                 End[i] = Math.min(left + (i + 1) * segment_len, right);
                 is_used[i] = false;
+                COUNTS[i] = 0;
             }
         }
+        segment_index = 0;
 
-
-        for(int i = 0; i < number_of_threads; i++){ // создание всех потоков
-            COUNTS[i] = 0;
+        for(int i = 0; i < number_of_threads; i++){ // создание и запуск всех потоков
             mSecondThread[i] = new AffableThread();	//Создание потока
-            mSecondThread[i].thread_id = i;
+            mSecondThread[i].thread_id = i; // инициализация потока уникальным id
             mSecondThread[i].start();//Запуск потока
         }
 
