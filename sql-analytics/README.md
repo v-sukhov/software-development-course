@@ -24,7 +24,6 @@ https://dbeaver.io/
 (за 2020 год в качестве результаты Вседомашней олимпиады). Загрузите файл в БД в таблицу roi.stats следующей структуры:
 
 	create table roi.stats
-	
 	(
 	
 		year				smallint,
@@ -48,17 +47,17 @@ https://dbeaver.io/
 
 	
 	COMMENT ON TABLE roi.stats IS 'Статистика результатов заключительных этапов Всероссийской олимпиады школьников по информатике';
-	
+
 	COMMENT ON COLUMN roi.stats.year IS 'Год олимпиады';
-	
+
 	COMMENT ON COLUMN roi.stats.place IS 'Итоговое место участника';
-	
+
 	COMMENT ON COLUMN roi.stats.fullname IS 'ФИО участника';
-	
+
 	COMMENT ON COLUMN roi.stats.class_education IS 'Класс обучения участника';
-	
+
 	COMMENT ON COLUMN roi.stats.class_participation IS 'Класс участия участника';
-	
+
 	COMMENT ON COLUMN roi.stats.task1_score IS 'Балл по задаче № 1';
 	
 	COMMENT ON COLUMN roi.stats.task2_score IS 'Балл по задаче № 2';
