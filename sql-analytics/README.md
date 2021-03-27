@@ -90,6 +90,45 @@ https://dbeaver.io/
 	
 загрузить данные в целевую таблицу.
 
+	insert into roi.stats 
+	(
+		"year",
+		place,
+		fullname,
+		region,
+		class_education,
+		class_participation,
+		task1_score,
+		task2_score,
+		task3_score,
+		task4_score,
+		task5_score,
+		task6_score,
+		task7_score,
+		task8_score,
+		total_score,
+		diploma
+	)
+	select
+		cast("year" as smallint),
+		cast(place as smallint),
+		fullname,
+		region,
+		cast(class_education as smallint),
+		greatest(cast(class_education as smallint), 9),
+		cast((case when task1_score in ('.', ' ', '. ', '') then 0 else cast(task1_score as smallint) end) as smallint),
+		cast((case when task2_score in ('.', ' ', '. ', '') then 0 else cast(task2_score as smallint) end) as smallint),
+		cast((case when task3_score in ('.', ' ', '. ', '') then 0 else cast(task3_score as smallint) end) as smallint),
+		cast((case when task4_score in ('.', ' ', '. ', '') then 0 else cast(task4_score as smallint) end) as smallint),
+		cast((case when task5_score in ('.', ' ', '. ', '') then 0 else cast(task5_score as smallint) end) as smallint),
+		cast((case when task6_score in ('.', ' ', '. ', '') then 0 else cast(task6_score as smallint) end) as smallint),
+		cast((case when task7_score in ('.', ' ', '. ', '') then 0 else cast(task7_score as smallint) end) as smallint),
+		cast((case when task8_score in ('.', ' ', '. ', '') then 0 else cast(task8_score as smallint) end) as smallint),
+		cast((case when total_score in ('.', ' ', '. ', '') then 0 else cast(total_score as smallint) end) as smallint),
+		diploma
+	from
+		roi.stats_import
+
 ### Задания
 
 Если для выполнения заданий вам потребуется создание дополнительных таблиц, создавайте их в отдельной схеме с названием, соответствующим вашей фамилии.
