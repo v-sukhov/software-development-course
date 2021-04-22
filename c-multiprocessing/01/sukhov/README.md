@@ -16,3 +16,9 @@ exit
     
 В следующем задании необходимо решить эти проблемы.
 
+Материалы:
+
+https://www.opennet.ru/docs/RUS/lnx_process/index.html
+https://www.opennet.ru/docs/RUS/linux_parallel/node7.html
+https://www.opennet.ru/docs/RUS/linux_parallel/node5.html
+
