@@ -124,13 +124,16 @@ int main(){
         }
     }
 
-    // Kill active processes
-    map<int, task>::iterator it;
-    for(it = tasksMap.begin(); it != tasksMap.end(); it++){
-        if(it->second.progress < 100){
-            kill(it->second.pid, SIGTERM);
+    if(parent){
+        // Kill active processes
+        map<int, task>::iterator it;
+        for(it = tasksMap.begin(); it != tasksMap.end(); it++){
+            if(it->second.progress < 100){
+                kill(it->second.pid, SIGTERM);
+            }
         }
     }
+
 
     return 0;
 }
