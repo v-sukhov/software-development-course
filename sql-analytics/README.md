@@ -14,6 +14,18 @@ https://www.w3schools.com/sql/default.asp
 
 https://www.postgresql.org/
 
+Для Ubuntu:
+
+	sudo apt-get install postgresql
+	
+Чтобы устанавливать соединение от имени суперпользователя postgres нужно от имени пользователя postgres операционной системы запустить psql:
+
+	sudo -u postgres psql postgres
+
+И задать пароль для пользователя:
+
+	ALTER USER postgres password '1';
+
 2. Установите JDBC-клиент DBeaver:
 
 https://dbeaver.io/
